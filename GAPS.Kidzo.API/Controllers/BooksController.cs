@@ -61,6 +61,7 @@ namespace GAPS.Kidzo.API.Controllers
         /// <param name="book"></param>
         /// <returns>boolean</returns>
         [HttpPost]
+        [Route("~/api/books/{quantity}")]
         public async Task<IActionResult> AddBook([FromBody] Book book)
         {
             try
