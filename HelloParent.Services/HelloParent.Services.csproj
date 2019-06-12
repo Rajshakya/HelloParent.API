@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HelloParent.IServices\HelloParent.IServices.csproj" />
+    <ProjectReference Include="..\HelloParent.MockData\HelloParent.MockData.csproj" />
+  </ItemGroup>
+
+</Project>
