@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.Services", "Hel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.MockData", "HelloParent.MockData\HelloParent.MockData.csproj", "{26DAAC69-BC0E-46A6-8A81-CBE06527D848}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloParent.MongoRepository", "HelloParent.MongoRepository\HelloParent.MongoRepository.csproj", "{EE1F00C6-5627-4215-8782-625C82900885}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloParent.MongoBase.Repository", "HelloParent.MongoBase.Repository\HelloParent.MongoBase.Repository.csproj", "{39EE1A59-3AE4-4025-88F5-D631363569BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{26DAAC69-BC0E-46A6-8A81-CBE06527D848}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26DAAC69-BC0E-46A6-8A81-CBE06527D848}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26DAAC69-BC0E-46A6-8A81-CBE06527D848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE1F00C6-5627-4215-8782-625C82900885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE1F00C6-5627-4215-8782-625C82900885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE1F00C6-5627-4215-8782-625C82900885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE1F00C6-5627-4215-8782-625C82900885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39EE1A59-3AE4-4025-88F5-D631363569BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39EE1A59-3AE4-4025-88F5-D631363569BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39EE1A59-3AE4-4025-88F5-D631363569BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39EE1A59-3AE4-4025-88F5-D631363569BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
