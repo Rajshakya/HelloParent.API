@@ -88,4 +88,42 @@ namespace HelloParent.Entities.Enums
         Transactional,
         Marketing
     }
+    public enum EngagementType
+    {
+        Alert,
+        Response,
+        ImageRequest,
+        Question,
+        Tooltip,
+        HpBlog,
+        Blog,
+        Album,
+        ReviewRequest,
+        ForumComment,
+        Forum,
+        Event,
+        Holiday,
+        PublicEvent,
+        BlogAlert,
+        EventAlert,
+        UpdatedEvent,
+        SendConsent,
+        ConsentReminder,
+        MealUpload,
+        ActivityUpload,
+        DayCare,
+        Birthday,
+        TimelinePost,
+        DailyReport,
+        AuthorizedPersonApproval,
+        PollResult,
+        Logout,
+        TeachKidsContent,
+        Fees
+    }
+    public enum UserType
+    {
+        HPCreated,
+        Free
+    }
 }

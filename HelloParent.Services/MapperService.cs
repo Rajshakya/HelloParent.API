@@ -1,5 +1,6 @@
 ﻿
 using HelloParent.Entities.LMS;
+using HelloParent.Entities.Model;
 using HelloParent.IServices;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace HelloParent.Services
             List<BookViews> bookViews = new List<BookViews>();
             foreach(var book in books)
             {
-                var modal = new BookViews()
+                var model = new BookViews()
                 {
                     Id = book.Id.ToString(),
                     CreatedAt = book.CreatedAt,
@@ -40,12 +41,35 @@ namespace HelloParent.Services
                 };
                 if(book.Status==Entities.Enums.StatusEnum.Issued)
                 {
-                    modal.IssuedTo = "Raj";
-                    modal.IssuedOn = DateTime.Now;
+                    model.IssuedTo = "Raj";
+                    model.IssuedOn = DateTime.Now;
                 }
-                bookViews.Add(modal);
+                bookViews.Add(model);
             }
             return bookViews;
+        }
+
+        public IList<StudentViews> MapStudentToStudentView(IList<Student> students)
+        {
+            List<StudentViews> studentViews = new List<StudentViews>();
+            foreach(var student in students)
+            {
+                var model = new StudentViews()
+                {
+                    Id = student.Id.ToString(),
+                    CreatedAt = student.CreatedAt,
+                    UpdatedAt=student.UpdatedAt,
+                    DeletedAt=student.DeletedAt,
+                    SchoolId=student.SchoolId.ToString(),
+                    Identifier=student.Identifier,
+                    Name=student.Name,
+                    FatherName=student.FatherName,
+                    MotherName=student.MotherName
+        
+                };
+                studentViews.Add(model);
+            }
+            return studentViews;
         }
     }
 }

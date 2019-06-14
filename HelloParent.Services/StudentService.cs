@@ -1,6 +1,8 @@
 ﻿using HelloParent.Entities;
+using HelloParent.Entities.Model;
 using HelloParent.IServices;
 using HelloParent.MockData;
+using HelloParent.MongoBase.Repository;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -9,12 +11,15 @@ using System.Threading.Tasks;
 
 namespace HelloParent.Services
 {
-    public class StudentService : IStudentService
+    public class StudentService : MongoBaseService<Student>, IStudentService
     {
+        public StudentService(IRepository<Student> repository):base(repository)
+        {
+
+        }
         public async Task<List<Student>> GetStudentBySchoolId(string id)
         {
-            var results = new StudentMock().GetMockData();
-            return results;
+            return await Get(x => x.SchoolId == ObjectId.Parse(id) && x.DeletedAt==null);
         }
     }
 }

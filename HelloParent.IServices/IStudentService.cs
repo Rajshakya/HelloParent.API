@@ -1,5 +1,7 @@
 ﻿
 using HelloParent.Entities;
+using HelloParent.Entities.Model;
+using HelloParent.IServices.Mongo;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,10 @@ using System.Threading.Tasks;
 
 namespace HelloParent.IServices
 {
-    public interface IStudentService
+    /// <summary>
+    /// Student service contract 
+    /// </summary>
+    public interface IStudentService: IMongoBaseService<Student>
     {
         Task<List<Student>> GetStudentBySchoolId(string id);    
     }

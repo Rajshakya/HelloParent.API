@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HelloParent.IServices;
+using HelloParent.MongoBase.Repository;
 using HelloParent.Services;
+using HelloParent.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -17,9 +19,9 @@ namespace GAPS.Kidzo.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            AppSettings.Initialize(env);
         }
 
         public IConfiguration Configuration { get; }
@@ -36,13 +38,17 @@ namespace GAPS.Kidzo.API
                                       .AllowCredentials()
                                       .AllowAnyHeader());
             });
-
-
+          
             services.AddMvc();
+
+            #region Add Dependency
             services.AddTransient<IBookService, BookService>();
             services.AddTransient<IBookTranscationService, BookTranscationService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IMapperService, MapperService>();
+            services.AddTransient(typeof(IRepository<>), typeof(MongoRepository<>));
+            #endregion
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

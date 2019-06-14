@@ -29,6 +29,7 @@ namespace HelloParent.Entities.Model
 
         public override bool Equals(object obj)
         {
+
             if (obj is BaseEntity)
             {
                 var parsed = obj as BaseEntity;
@@ -39,7 +40,9 @@ namespace HelloParent.Entities.Model
 
         public override int GetHashCode()
         {
+        
             return this.Id.GetHashCode();
+          
         }
     }
 }

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HelloParent.Entities\HelloParent.Entities.csproj" />
+    <ProjectReference Include="..\HelloParent.Utilities\HelloParent.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

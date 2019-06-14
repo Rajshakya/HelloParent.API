@@ -14,23 +14,28 @@ namespace GAPS.Kidzo.API.Controllers
     
     public class StudentController : ControllerBase
     {
-        private readonly IStudentService _studentService;      
-
-        public StudentController(IStudentService studentService)
+        private readonly IStudentService _studentService;
+        private readonly IMapperService _mapperService;
+        public StudentController(IStudentService studentService, IMapperService mapperService)
         {
             _studentService = studentService;
-           
+            _mapperService = mapperService;
         }
-
-
        
+
+        /// <summary>
+        /// Get Students By School
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStudents(string id)
         {
             try
             {
-                var result = await _studentService.GetStudentBySchoolId(id);
-                return Ok(result);
+                var result = await _studentService.GetStudentBySchoolId("56e45c3af289df1048faced3");
+                var mappedResult = _mapperService.MapStudentToStudentView(result);
+                return Ok(mappedResult);
             }
             catch (ArgumentNullException argNullEx)
             {

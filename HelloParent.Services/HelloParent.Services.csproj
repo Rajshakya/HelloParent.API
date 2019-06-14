@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HelloParent.IServices\HelloParent.IServices.csproj" />
     <ProjectReference Include="..\HelloParent.MockData\HelloParent.MockData.csproj" />
+    <ProjectReference Include="..\HelloParent.MongoBase.Repository\HelloParent.MongoBase.Repository.csproj" />
   </ItemGroup>
 
 </Project>
