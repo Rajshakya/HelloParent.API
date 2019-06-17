@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HelloParent.Base.Repository\HelloParent.Base.Repository.csproj" />
     <ProjectReference Include="..\HelloParent.IServices\HelloParent.IServices.csproj" />
     <ProjectReference Include="..\HelloParent.Services\HelloParent.Services.csproj" />
     <ProjectReference Include="..\HelloParent.Utilities\HelloParent.Utilities.csproj" />

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HelloParent.Base.Repository;
+using HelloParent.Base.Repository.Interfaces;
 using HelloParent.IServices;
 using HelloParent.MongoBase.Repository;
 using HelloParent.Services;
@@ -42,11 +44,17 @@ namespace GAPS.Kidzo.API
             services.AddMvc();
 
             #region Add Dependency
+            //// Service ///
             services.AddTransient<IBookService, BookService>();
             services.AddTransient<IBookTranscationService, BookTranscationService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IMapperService, MapperService>();
+            services.AddTransient<IMapperService, MapperService>();
+
+            /// Repository ///
+
             services.AddTransient(typeof(IRepository<>), typeof(MongoRepository<>));
+            services.AddTransient<IBookRepository, BookRepository>();
             #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

@@ -7,9 +7,9 @@ using System.Text;
 
 namespace HelloParent.Entities.LMS
 {
-    public class Book:BaseEntity
+    public class Book: SQLBaseEntity
     {
-        public ObjectId SchoolId { get; set; }
+        public string SchoolId { get; set; }
         public string Name { get; set; }
         public string AuthorName { get; set; }
         public string PublisherName { get; set; }

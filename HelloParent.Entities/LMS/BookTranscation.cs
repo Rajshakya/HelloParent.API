@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HelloParent.Entities.LMS
 {
-    public class BookTranscation:BaseEntity
+    public class BookTranscation:SQLBaseEntity
     {
         public ObjectId StudentId { get; set; }
         public ObjectId SchoolId { get; set; }

@@ -27,20 +27,20 @@ namespace HelloParent.Services
            
             var result = new Book()
             {
-                Id = ObjectId.GenerateNewId(),
-                SchoolId = ObjectId.Parse("56e45c3af289df1048faced3"),
-                Name = "For whom the Bell Tolls",
-                PublisherName = "",
-                AuthorName = "Ernest Hemingway",
-                Status = Entities.Enums.StatusEnum.Available,
-                ShelfRackPosition = "Middle Position",
-                Subject = "English",
-                Category = Entities.Enums.CategoryEnum.Book,
-                ISBNNo = "ISB No",
-                DDC = "DDC",
-                Keywords = "Keywords",
-                Pages = 1,
-                CreatedAt = DateTime.Now
+                //Id = ObjectId.GenerateNewId(),
+                //SchoolId = ObjectId.Parse("56e45c3af289df1048faced3"),
+                //Name = "For whom the Bell Tolls",
+                //PublisherName = "",
+                //AuthorName = "Ernest Hemingway",
+                //Status = Entities.Enums.StatusEnum.Available,
+                //ShelfRackPosition = "Middle Position",
+                //Subject = "English",
+                //Category = Entities.Enums.CategoryEnum.Book,
+                //ISBNNo = "ISB No",
+                //DDC = "DDC",
+                //Keywords = "Keywords",
+                //Pages = 1,
+                //CreatedAt = DateTime.Now
             };
             return result;
         }

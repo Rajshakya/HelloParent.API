@@ -24,6 +24,11 @@ namespace HelloParent.Utilities
         public static string DbEnv { get; set; }
 
         /// <summary>
+        /// SQL Connection string
+        /// </summary>
+        public static string SQLConnestionString { get; set; }
+
+        /// <summary>
         /// Gets or sets the instance.
         /// </summary>
         /// <value>The instance.</value>
@@ -45,6 +50,8 @@ namespace HelloParent.Utilities
             DbUrl = "mongodb://helloparent_db:L0OJKBlSxOUqXESr@cluster-hp-shard-00-00-xdc7b.azure.mongodb.net:27017,cluster-hp-shard-00-01-xdc7b.azure.mongodb.net:27017,cluster-hp-shard-00-02-xdc7b.azure.mongodb.net:27017/test?ssl=true&replicaSet=cluster-hp-shard-0&authSource=admin&retryWrites=true";
 
             DbEnv = config.GetSection("AppSettings:DbEnv") != null ? config.GetSection("AppSettings:DbEnv").Value : "";
+
+            SQLConnestionString = config.GetSection("AppSettings:SQLConnestionString") != null ? config.GetSection("AppSettings:SQLConnestionString").Value : "";
         }
 
         /// <summary>

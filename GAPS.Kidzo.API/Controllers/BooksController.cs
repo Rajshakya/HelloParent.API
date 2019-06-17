@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HelloParent.Base.Repository.Interfaces;
 using HelloParent.Entities.LMS;
 using HelloParent.IServices;
+using HelloParent.Utilities.Constants;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +20,15 @@ namespace GAPS.Kidzo.API.Controllers
         private readonly IBookService _bookService;
         private readonly IBookTranscationService _bookTranscationService;
         private readonly IMapperService _mapperService;
+        private readonly IBookRepository _bookRepository;
 
-        public BooksController(IBookService bookService, IBookTranscationService bookTranscationService,IMapperService mapperService)
+        public BooksController(IBookService bookService, IBookTranscationService bookTranscationService,IMapperService mapperService,
+            IBookRepository bookRepository)
         {
             _bookService = bookService;
             _bookTranscationService = bookTranscationService;
             _mapperService = mapperService;
+            _bookRepository = bookRepository;
         }
 
 
@@ -37,8 +42,9 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var result =await _bookService.GetBooks(id);
-                var mappedResult = _mapperService.MapBookToBookView(result);
+                id = Constants.TestingSchool_Id;
+                var result =await _bookRepository.GetBooks(id);
+                var mappedResult = _mapperService.MapBookToBookView(result.ToList());
                 return Ok(mappedResult);
             }
             catch (ArgumentNullException argNullEx)
@@ -51,7 +57,7 @@ namespace GAPS.Kidzo.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -66,8 +72,12 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var result =await _bookService.AddBook(book);
-                return Ok(result);
+                for (int i = 0; i < quantity; i++)
+                {
+                    book.SchoolId = Constants.TestingSchool_Id;
+                    var result = await _bookRepository.AddBook(book);
+                }
+                return Ok(true);
             }
             catch (ArgumentNullException argNullEx)
             {
