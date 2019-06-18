@@ -46,7 +46,6 @@ namespace GAPS.Kidzo.API
             #region Add Dependency
             //// Service ///
             services.AddTransient<IBookService, BookService>();
-            services.AddTransient<IBookTranscationService, BookTranscationService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IMapperService, MapperService>();
             services.AddTransient<IMapperService, MapperService>();
@@ -55,6 +54,7 @@ namespace GAPS.Kidzo.API
 
             services.AddTransient(typeof(IRepository<>), typeof(MongoRepository<>));
             services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IBookTransactionRepository, BookTransactionRepository>();
             #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

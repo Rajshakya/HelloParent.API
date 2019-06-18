@@ -18,15 +18,13 @@ namespace GAPS.Kidzo.API.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        private readonly IBookTranscationService _bookTranscationService;
         private readonly IMapperService _mapperService;
         private readonly IBookRepository _bookRepository;
 
-        public BooksController(IBookService bookService, IBookTranscationService bookTranscationService,IMapperService mapperService,
+        public BooksController(IBookService bookService,IMapperService mapperService,
             IBookRepository bookRepository)
         {
             _bookService = bookService;
-            _bookTranscationService = bookTranscationService;
             _mapperService = mapperService;
             _bookRepository = bookRepository;
         }
@@ -120,58 +118,6 @@ namespace GAPS.Kidzo.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Book Issue
-        /// </summary>
-        /// <param name="bookTranscation"></param>
-        /// <returns>boolean</returns>
-        [HttpPost]
-        public async Task<IActionResult> BookIssue([FromBody] BookTranscation bookTranscation)
-        {
-            try
-            {
-                var result =await _bookTranscationService.BookIssue(bookTranscation);
-                return Ok(result);
-            }
-            catch (ArgumentNullException argNullEx)
-            {
-                return BadRequest(argNullEx.Message);
-            }
-            catch (ArgumentException argEx)
-            {
-                return BadRequest(argEx.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        /// <summary>
-        /// Book Return
-        /// </summary>
-        /// <param name="bookTranscation"></param>
-        /// <returns>boolean</returns>
-        [HttpPost]
-        public async Task<IActionResult> BookReturn([FromBody] BookTranscation bookTranscation)
-        {
-            try
-            {
-                var result =await _bookTranscationService.BookReturn(bookTranscation);
-                return Ok(result);
-            }
-            catch (ArgumentNullException argNullEx)
-            {
-                return BadRequest(argNullEx.Message);
-            }
-            catch (ArgumentException argEx)
-            {
-                return BadRequest(argEx.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
+      
     }
 }
