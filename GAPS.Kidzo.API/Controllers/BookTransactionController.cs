@@ -23,12 +23,6 @@ namespace GAPS.Kidzo.API.Controllers
             _mapperService = mapperService;
             _bookTransactionRepository = bookTransactionRepository;
         }
-        [HttpGet("getTranscationsbook")]
-        public async Task<IActionResult> GetTranscationsBook()
-        {
-           return Ok();
-        }
-
         /// <summary>
         /// Issue Book
         /// </summary>

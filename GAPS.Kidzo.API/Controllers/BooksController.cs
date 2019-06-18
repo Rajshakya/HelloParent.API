@@ -35,12 +35,12 @@ namespace GAPS.Kidzo.API.Controllers
         /// </summary>
         /// <param name="schoolId"></param>
         /// <returns>book list</returns>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBooks(string id)
+        [HttpGet]
+        public async Task<IActionResult> GetBooks()
         {
             try
             {
-                id = Constants.TestingSchool_Id;
+                var id = Constants.TestingSchool_Id;
                 var result =await _bookRepository.GetBooks(id);
                 var mappedResult = _mapperService.MapBookToBookView(result.ToList());
                 return Ok(mappedResult);
