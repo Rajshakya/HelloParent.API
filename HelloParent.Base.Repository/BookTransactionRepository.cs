@@ -64,13 +64,38 @@ namespace HelloParent.Base.Repository
                     DynamicParameters parameters = new DynamicParameters();
                     parameters.Add("@Id", book.Id);
                     parameters.Add("@BookId", book.BookId);
-                    parameters.Add("@ReturnDate", book.ReturnDate);
+                    parameters.Add("@ReturnDate", DateTime.Now);
                     parameters.Add("@UpdatedAt", DateTime.Now);
 
                     #endregion
 
                     var result = await dbConnection.ExecuteAsync("Usp_return_book", parameters, commandType: CommandType.StoredProcedure);
                     return true;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<IssuedBook>> GetIssuedBooksByStudId(string studentId)
+        {
+            try
+            {
+                using (IDbConnection dbConnection = _connection)
+                {
+                    if (dbConnection.State == ConnectionState.Closed)
+                        dbConnection.Open();
+
+                    #region Bind sql parameters
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("@StudentId", studentId);
+
+                    #endregion
+                    var result = await dbConnection.QueryAsync<IssuedBook>("Usp_GetIssuedBooks", parameters, commandType: CommandType.StoredProcedure);
+                    return result;
 
                 }
             }

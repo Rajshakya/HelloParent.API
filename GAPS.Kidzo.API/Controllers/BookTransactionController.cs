@@ -59,8 +59,7 @@ namespace GAPS.Kidzo.API.Controllers
         /// </summary>
         /// <param name="bookTransaction"></param>
         /// <returns>boolean</returns>
-        [HttpPost]
-        [Route("~/api/bookTransaction/ReturnBook")]
+        [HttpPost("bookreturn")]
         public async Task<IActionResult> ReturnBook([FromBody] List<BookTranscation> books)
         {
             try
@@ -82,6 +81,29 @@ namespace GAPS.Kidzo.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex);
+            }
+        }
+
+
+        [HttpGet("{studentId}")]
+        public async Task<IActionResult> GetIssuedBooks(string studentId)
+        {
+            try
+            {
+                var result = await _bookTransactionRepository.GetIssuedBooksByStudId(studentId);
+                return Ok(result);
+            }
+            catch (ArgumentNullException argNullEx)
+            {
+                return BadRequest(argNullEx.Message);
+            }
+            catch (ArgumentException argEx)
+            {
+                return BadRequest(argEx.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
