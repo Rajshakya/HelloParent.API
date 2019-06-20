@@ -15,6 +15,7 @@ namespace HelloParent.IServices
     /// </summary>
     public interface IStudentService: IMongoBaseService<Student>
     {
-        Task<List<Student>> GetStudentBySchoolId(string id);    
+        Task<List<Student>> GetStudentBySchoolId(string id);
+        Task<Student> GetStudentByStudentId(string id);
     }
 }

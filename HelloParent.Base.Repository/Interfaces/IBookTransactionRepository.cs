@@ -11,6 +11,7 @@ namespace HelloParent.Base.Repository.Interfaces
         Task<bool> IssueBook(BookTranscation book);
         Task<bool> ReturnBook(BookTranscation book);
         Task<IEnumerable<IssuedBook>> GetIssuedBooksByStudId(string studentId);
+        Task<BookTranscation> GetBookTranscationByBookId(long Id);
 
     }
 }

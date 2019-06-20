@@ -104,5 +104,29 @@ namespace HelloParent.Base.Repository
                 throw ex;
             }
         }
+
+        public async Task<BookTranscation> GetBookTranscationByBookId(long Id)
+        {
+            try
+            {
+                using (IDbConnection dbConnection = _connection)
+                {
+                    if (dbConnection.State == ConnectionState.Closed)
+                        dbConnection.Open();
+
+                    #region Bind sql parameters
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("@BookId", Id);
+
+                    #endregion
+                    var result = await dbConnection.QuerySingleAsync<BookTranscation>("Usp_GetIssuedBooksByBookId", parameters, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
