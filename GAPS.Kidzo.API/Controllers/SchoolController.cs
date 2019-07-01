@@ -12,31 +12,28 @@ namespace GAPS.Kidzo.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
-    public class StudentController : ControllerBase
+    public class SchoolController : ControllerBase
     {
-        private readonly IStudentService _studentService;
+        private readonly ISchoolService _schoolService;
         private readonly IMapperService _mapperService;
-        public StudentController(IStudentService studentService, IMapperService mapperService)
+        public SchoolController(ISchoolService schoolService, IMapperService mapperService)
         {
-            _studentService = studentService;
+            _schoolService = schoolService;
             _mapperService = mapperService;
         }
-       
 
         /// <summary>
-        /// Get Students By School
+        /// Get Sessions By School Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetStudents(string id)
+        [HttpGet("activeschool")]
+        public async Task<IActionResult> GetActiveSchool()
         {
             try
             {
-                var result = await _studentService.GetStudentBySchoolId(Constants.TestingSchool_Id);
-                var mappedResult = _mapperService.MapStudentToStudentView(result);
-                return Ok(mappedResult);
+                var result = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+                return Ok(result.Sessions);
             }
             catch (ArgumentNullException argNullEx)
             {
@@ -52,15 +49,19 @@ namespace GAPS.Kidzo.API.Controllers
             }
         }
 
-        [HttpGet("{classid}/class")]
-        public async Task<IActionResult> GetStudentsByClass(string classId)
+        /// <summary>
+        /// Get Sessions By School Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("feecycles/{sessionId}")]
+        public async Task<IActionResult> GetFeeCycles(string sessionId)
         {
             try
             {
-                var schoolId = Constants.TestingSchool_Id;
-                var result = await _studentService.GetStudentByClass(classId,schoolId);
-                var mappedResult = _mapperService.MapStudentToStudentView(result);
-                return Ok(mappedResult);
+                var result = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+                var feeCycles = result.FeeCycles.Where(x => x.SessionId == ObjectId.Parse(sessionId));
+                return Ok(feeCycles);
             }
             catch (ArgumentNullException argNullEx)
             {

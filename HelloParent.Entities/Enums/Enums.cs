@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace HelloParent.Entities.Enums
@@ -125,5 +126,13 @@ namespace HelloParent.Entities.Enums
     {
         HPCreated,
         Free
+    }
+    public enum FeeStatus
+    {
+        [Display(Name = "Pending Approval")] PendingApproval,
+        Approved,
+        Paid,
+        [Display(Name = "Partial Paid")] PartialPaid,
+        Cancelled
     }
 }
