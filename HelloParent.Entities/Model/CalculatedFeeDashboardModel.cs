@@ -119,4 +119,14 @@ namespace HelloParent.Entities.Model
         public string SchoolFeeComponentId { get; set; }
 
     }
+
+    public class CalculateFeeModel
+    {
+        public IEnumerable<FeeCycleSingleModel> FeeCycles { get; set; }
+        public IDictionary<string, string> SessionDict { get; set; }
+        public string SessionId { get; set; }
+        public FeeCycleSingleModel FeeCycle { get; set; }
+        public string FeeCycleId { get; set; }
+        public string SchoolId { get; set; }
+    }
 }

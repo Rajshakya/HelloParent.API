@@ -6,8 +6,22 @@ using System.Text;
 
 namespace HelloParent.Entities.Model
 {
-    class FeeCycleDashboardModel
+    public class FeeCycleDashboardModel
     {
+        public FeeCycleDashboardModel()
+        {
+            ClassDict = new Dictionary<string, string>();
+            SessionDict = new Dictionary<string, string>();
+        }
+        public FeeCycleSingleModel FeeCycleForPopup { get; set; }
+        public FeeCycleSingleModel FeeCycle { get; set; }
+        public IEnumerable<FeeCycleSingleModel> FeeCycles { get; set; }
+        public string SchoolId { get; set; }
+        public string ClassId { get; set; }
+        public string FeeCycleId { get; set; }
+        public IDictionary<string, string> ClassDict { get; set; }
+        public IDictionary<string, string> SessionDict { get; set; }
+        public string SessionId { get; set; }
     }
     public class FeeCycleSingleModel
     {
@@ -30,4 +44,18 @@ namespace HelloParent.Entities.Model
         public double LateFee { get; set; }
         public ObjectId SessionId { get; set; }
     }
+
+    public class FeeCycleDetailModel
+    {
+        public string SessionId { get; set; }
+        public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime LastDueDate { get; set; }
+        public double LateFee { get; set; }
+        public ObjectId Id { get; set; }
+
+    }
+
+
 }
