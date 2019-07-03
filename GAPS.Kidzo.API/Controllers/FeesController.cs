@@ -19,6 +19,7 @@ namespace GAPS.Kidzo.API.Controllers
     [ApiController]
     public class FeesController : ControllerBase
     {
+       
         private readonly IMapperService _mapperService;
         private readonly IFeeService _feeService;
         private readonly ISchoolService _schoolService;
@@ -32,6 +33,12 @@ namespace GAPS.Kidzo.API.Controllers
             this._schoolClassService = schoolClassService;
             this._studentService = studentService;
             this._mapperService = mapperService;
+       //     this._userService = userService;
+        }
+        [HttpGet("fees")]
+        public async Task<ActionResult> GetFees()
+        {
+            return Ok();
         }
         [HttpPost("getfees")]
         public async Task<ActionResult> GetFees([FromBody] FeeFilterView model)
@@ -252,66 +259,66 @@ namespace GAPS.Kidzo.API.Controllers
         }
 
 
-        [HttpPost("approveselectedfee")]
-        public async Task<ActionResult> ApproveSelectedFee(FeeApproveModel feeModel)
-        {
+        //[HttpPost("approveselectedfee")]
+        //public async Task<ActionResult> ApproveSelectedFee(FeeApproveModel feeModel)
+        //{
            
-            if (feeModel.FeeIds.Any())
-            {
-                var msg = "";
-                var Testing_UserId = Constants.TestingUser_Id;
-                // Raj    var user = await _userService.GetById(User.Identity.GetUserId());
-                var user = new ApplicationUser();
-                var ids = feeModel.FeeIds.Select(x => x.AsObjectId());
+        //    if (feeModel.FeeIds.Any())
+        //    {
+        //        var msg = "";
+        //        var Testing_UserId = Constants.TestingUser_Id;
+        //        var user = await _userService.GetById(Testing_UserId);
+               
+        //        var ids = feeModel.FeeIds.Select(x => x.AsObjectId());
 
-                //var allCalculatedFee =
-                //    await _feeService.Get(x => ids.Contains(x.Id));
-                // var notificationStudentList = new List<ObjectId>();
-                //if (allCalculatedFee.Any()) {
-                //    var singleFee = allCalculatedFee.FirstOrDefault();
-                //if (singleFee != null) {
-                //var school = await _schoolService.GetById(singleFee.SchoolId);
-                //var feeCycles = school.FeeCycles;
-                //  foreach (var fee in allCalculatedFee) {
-                if (feeModel.Command == "Approve fees")
-                {
-                    await
-                        _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Approved,
-                            user);
-                    //fee.ApprovedDate = DateTime.Now;
-                    //fee.ApprovedBy = User.Identity.GetUserId();
+        //        //var allCalculatedFee =
+        //        //    await _feeService.Get(x => ids.Contains(x.Id));
+        //        // var notificationStudentList = new List<ObjectId>();
+        //        //if (allCalculatedFee.Any()) {
+        //        //    var singleFee = allCalculatedFee.FirstOrDefault();
+        //        //if (singleFee != null) {
+        //        //var school = await _schoolService.GetById(singleFee.SchoolId);
+        //        //var feeCycles = school.FeeCycles;
+        //        //  foreach (var fee in allCalculatedFee) {
+        //        if (feeModel.Command == "Approve fees")
+        //        {
+        //            await
+        //                _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Approved,
+        //                    user);
+        //            //fee.ApprovedDate = DateTime.Now;
+        //            //fee.ApprovedBy = User.Identity.GetUserId();
 
-                    //fee.FeeStatus = FeeStatus.Approved;
+        //            //fee.FeeStatus = FeeStatus.Approved;
 
-                    //if (feeModel.IsNotification) {
-                    //    notificationStudentList.Add(fee.StudentId);
-                    //}
+        //            //if (feeModel.IsNotification) {
+        //            //    notificationStudentList.Add(fee.StudentId);
+        //            //}
 
 
-                    msg = "Fees have been approved successfully";
-                }
-                else
-                {
-                    if (feeModel.Command == "Cancel fees")
-                    {
-                        await
-                            _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Cancelled,
-                                user);
-                        //fee.CancelledDate = DateTime.Now;
-                        //fee.CancelledBy = User.Identity.GetUserId();
-                        //fee.Remark = feeModel.ReasonToSend;
-                        //fee.FeeStatus = FeeStatus.Cancelled;
-                        msg = "Fees have been cancelled successfully";
-                    }
-                }
-                //await _feeService.Update(fee);
-                // }
+        //            msg = "Fees have been approved successfully";
+        //        }
+        //        else
+        //        {
+        //            if (feeModel.Command == "Cancel fees")
+        //            {
+        //                await
+        //                    _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Cancelled,
+        //                        user);
+        //                //fee.CancelledDate = DateTime.Now;
+        //                //fee.CancelledBy = User.Identity.GetUserId();
+        //                //fee.Remark = feeModel.ReasonToSend;
+        //                //fee.FeeStatus = FeeStatus.Cancelled;
+        //                msg = "Fees have been cancelled successfully";
+        //            }
+        //        }
+        //        //await _feeService.Update(fee);
+        //        // }
 
-                // }
-                // }
-               // TempData["SuccessMessage"] = msg;  Raj
-            }
-            return Ok();
-        }
+        //        // }
+        //        // }
+        //       // TempData["SuccessMessage"] = msg;  Raj
+        //    }
+        //    return Ok();
+        //}
     }
 }

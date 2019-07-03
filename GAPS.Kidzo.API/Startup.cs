@@ -52,6 +52,7 @@ namespace GAPS.Kidzo.API
             services.AddTransient<ISchoolService, SchoolService>();
             services.AddTransient<ISchoolClassService, SchoolClassService>();
             services.AddTransient<IFeeService, FeeService>();
+            services.AddTransient<IUserService,UserService>();
             /// Repository ///
 
             services.AddTransient(typeof(IRepository<>), typeof(MongoRepository<>));
