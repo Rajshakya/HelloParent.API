@@ -122,11 +122,18 @@ namespace HelloParent.Entities.Model
 
     public class CalculateFeeModel
     {
+        public CalculateFeeModel()
+        {
+            ClassDict = new Dictionary<string, string>();
+            SessionDict = new Dictionary<string, string>();
+        }
         public IEnumerable<FeeCycleSingleModel> FeeCycles { get; set; }
         public IDictionary<string, string> SessionDict { get; set; }
         public string SessionId { get; set; }
         public FeeCycleSingleModel FeeCycle { get; set; }
         public string FeeCycleId { get; set; }
         public string SchoolId { get; set; }
+        public string ClassId { get; set; }
+        public IDictionary<string, string> ClassDict { get; set; }
     }
 }

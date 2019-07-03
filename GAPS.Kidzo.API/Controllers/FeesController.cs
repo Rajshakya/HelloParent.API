@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GAPS.Kidzo.API.Views;
 using HelloParent.Entities.Enums;
@@ -11,7 +13,9 @@ using HelloParent.Utilities.Constants;
 using HelloParent.Utilities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
 
 namespace GAPS.Kidzo.API.Controllers
 {
@@ -376,8 +380,8 @@ namespace GAPS.Kidzo.API.Controllers
                                 x.SchoolId == schoolId.AsObjectId());
                 var classDict = allClassesForSchool.OrderBy(x => x.Name)
                     .ToDictionary(x => x.Id.ToString(), x => x.Name);
-                //model.ClassDict.Add("All", "All");
-                //classDict.ToList().ForEach(x => model.ClassDict[x.Key] = x.Value);
+                model.ClassDict.Add("All", "All");
+                classDict.ToList().ForEach(x => model.ClassDict[x.Key] = x.Value);
                 var now = DateTime.Now;
                 var stdate = new DateTime(now.Year, now.Month, 1);
                 var endDate = stdate.AddMonths(1).AddDays(-1);
@@ -398,7 +402,8 @@ namespace GAPS.Kidzo.API.Controllers
             }
         }
 
-        public async Task<ActionResult> UpdateFeeCycle(FeeCycleDetailModel model)
+        [HttpPost("updatefeecycle")]
+        public async Task<ActionResult> UpdateFeeCycle([FromBody] FeeCycleView model)
         {
             //var rights = GetMyRights();
             //if (rights == null)
@@ -412,13 +417,13 @@ namespace GAPS.Kidzo.API.Controllers
             var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
 
             var feeCycleForSession = school.FeeCycles.FirstOrDefault(x => x.SessionId == model.SessionId.AsObjectId() && x.Name.ToLower().Trim() == model.Name.ToLower().Trim());
-            if (feeCycleForSession != null && model.Id != feeCycleForSession.Id)
+            if (feeCycleForSession != null && model.Id != feeCycleForSession.Id.ToString())
             {
 
-                return RedirectToAction("FeeCycleDashboard");
+                return BadRequest("Invalid fee cycle");
             }
 
-            var feeCycle = school.FeeCycles.FirstOrDefault(x => x.Id == model.Id);
+            var feeCycle = school.FeeCycles.FirstOrDefault(x => x.Id == model.Id.AsObjectId());
 
             if (feeCycle != null)
             {
@@ -431,8 +436,82 @@ namespace GAPS.Kidzo.API.Controllers
             }
             await _schoolService.Update(school);
             
-            return RedirectToAction("FeeCycleDashboard", new { id = model.Id});
+            return Ok(feeCycle);
         }
+
+        [HttpPost("CalCulateFeeForClass")]
+        public async Task<ActionResult> CalCulateFeeForClass(FeeCycleDashboardModel model)
+        {
+            //var rights = GetMyRights();
+            //if (rights == null)
+            //{
+            //    return RedirectToAction("LogOff", "Account");
+            //}
+            //if (!rights.CanManageFee)
+            //{
+            //    return RedirectToAction("Index", "Messages");
+            //}
+            var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+            var activeSessions = school.GetActiveSession();
+
+
+            var cycle = school.FeeCycles.FirstOrDefault(x => x.Id == model.FeeCycleId.AsObjectId());
+            var students = new List<Student>();
+            if (model.ClassId != "All")
+            {
+                students =
+                    await
+                        _studentService.Get(
+                            x => x.ClassId == model.ClassId.AsObjectId() && x.DeactivateDate == null);
+            }
+            else
+            {
+                if (model.ClassId == "All")
+                {
+                    var allclassForSession =
+                        await
+                            _schoolClassService.Get(
+                                x =>
+                                    x.SessionId == activeSessions.Id && x.DeactivateDate == null &&
+                                    x.SchoolId == Constants.TestingSchool_Id.AsObjectId());
+                    var clssIds = allclassForSession.Select(x => x.Id);
+                    students =
+                        await _studentService.Get(x => clssIds.Contains(x.ClassId) && x.DeactivateDate == null);
+                }
+            }
+            if (students.Count == 0)
+            {
+                return BadRequest("The students are not avilable in the selected class");
+            }
+            var count = 0;
+            var existingcount = 0;
+            foreach (var student in students)
+            {
+                var issuccessfullyCalculate = await _feeService.GenerateFee(student, cycle, school);
+                if (issuccessfullyCalculate != null)
+                {
+                    if (issuccessfullyCalculate.FeeStatus == FeeStatus.PendingApproval)
+                    {
+                        count = count + 1;
+                    }
+                    else
+                    {
+                        existingcount = existingcount + 1;
+                    }
+                }
+            }
+
+            if (count == 0 && existingcount == 0)
+            {
+                return BadRequest("Please create fee components for the respective class before calculating fee");
+            }
+            if (existingcount > 0 && count == 0)
+            {
+                return BadRequest("The fee has been already calculated for this class");
+            }
+            return BadRequest("Fee for {0} students has been calculated successfully");
+        }
+
 
 
     }
