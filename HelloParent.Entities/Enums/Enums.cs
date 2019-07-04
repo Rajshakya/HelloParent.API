@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace HelloParent.Entities.Enums
@@ -125,5 +126,62 @@ namespace HelloParent.Entities.Enums
     {
         HPCreated,
         Free
+    }
+    public enum FeeStatus
+    {
+        [Display(Name = "Pending Approval")] PendingApproval,
+        Approved,
+        Paid,
+        [Display(Name = "Partial Paid")] PartialPaid,
+        Cancelled
+    }
+    public enum JobStatus
+    {
+        Unknown = 0,
+
+        /// <summary>
+        /// New job scheduled and ready to be picked.
+        /// </summary>
+        New = 1,
+
+        /// <summary>
+        /// Job is in progress so that same job is not picked twice.
+        /// </summary>
+        InProgress = 2,
+
+        /// <summary>
+        /// Job is completed.
+        /// </summary>
+        Completed = 3,
+
+        /// <summary>
+        /// Job failed in last execution.
+        /// </summary>
+        Failed = 4,
+
+        /// <summary>
+        /// Job status when retry is needed. Each job should decide if failure occurred to we retry or mark it as failed.
+        /// Failed jobs will be never be retried only retry needed jobs will be retried 3 times after which they will be marked as failed.
+        /// </summary>
+        RetryNeeded = 5
+    }
+    public enum TransactionStatus
+    {
+        Pending,
+        Completed,
+        Cancelled
+    }
+    public enum AmountMode
+    {
+        Cash,
+        [Display(Name = "Bank Transfer")] BankDraft,
+        Cheque,
+        [Display(Name = "Online Payment")] OnlinePayement,
+        [Display(Name = "Card Payment")] CardPayment,
+        IMPS
+    }
+    public enum TransactionItemType
+    {
+        Fee
     }
 }

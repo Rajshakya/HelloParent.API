@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace HelloParent.Entities.Model
 {
     [BsonIgnoreExtraElements]
-    public class ApplicationUser : IdentityUser, ITrackable
+    public class ApplicationUser : IdentityUser, ITrackable, IEntity<ObjectId>
     {
         public ApplicationUser()
         {
@@ -70,6 +70,7 @@ namespace HelloParent.Entities.Model
         public UserType Type { get; set; }
         public string Country { get; set; }
         public string Signature { get; set; }
+        ObjectId IEntity<ObjectId>.Id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public bool IsAppleAppUser()
         {

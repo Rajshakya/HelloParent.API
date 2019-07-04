@@ -16,5 +16,6 @@ namespace HelloParent.IServices
     {
         IList<BookViews> MapBookToBookView(IList<Book> books);
         IList<StudentViews> MapStudentToStudentView(IList<Student> students);
+        FeeCycleSingleModel MapFeeCycleToFeeCycleSingleModel(FeeCycle feeCycle);
     }
 }

@@ -18,6 +18,12 @@ namespace HelloParent.Services
         {
 
         }
+
+        public async Task<List<Student>> GetStudentByClass(string classId,string schoolId)
+        {
+            return await Get(x => x.SchoolId == ObjectId.Parse(schoolId) && x.ClassId==ObjectId.Parse(classId) && x.DeletedAt == null);
+        }
+
         public async Task<List<Student>> GetStudentBySchoolId(string id)
         {
             return await Get(x => x.SchoolId == ObjectId.Parse(id) && x.DeletedAt==null);

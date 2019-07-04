@@ -71,5 +71,20 @@ namespace HelloParent.Services
             }
             return studentViews;
         }
+
+        public FeeCycleSingleModel MapFeeCycleToFeeCycleSingleModel(FeeCycle feeCycle)
+        {
+            FeeCycleSingleModel feeCycleSingle = new FeeCycleSingleModel();
+            feeCycleSingle.Id = feeCycle.Id;
+            feeCycleSingle.Name = feeCycle.Name;
+            feeCycleSingle.StartDate = feeCycle.StartDate;
+            feeCycleSingle.EndDate = feeCycle.EndDate;
+            feeCycleSingle.IdString = feeCycle.Id.ToString();
+            feeCycleSingle.CreatedAt = feeCycle.CreatedAt;
+            feeCycleSingle.LastDueDate = feeCycle.LastDueDate;
+            feeCycleSingle.LateFee = feeCycle.LateFee;
+            feeCycleSingle.SessionId = feeCycle.SessionId;
+            return feeCycleSingle;
+        }
     }
 }

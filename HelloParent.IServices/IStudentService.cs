@@ -17,5 +17,6 @@ namespace HelloParent.IServices
     {
         Task<List<Student>> GetStudentBySchoolId(string id);
         Task<Student> GetStudentByStudentId(string id);
+        Task<List<Student>> GetStudentByClass(string classId,string schoolId);
     }
 }
