@@ -466,7 +466,9 @@ namespace GAPS.Kidzo.API.Controllers
             model.FeeStatus = feeStatus;
             return Ok(model);
         }
-            public async Task<ActionResult> UpdateFeeCycle(FeeCycleDetailModel model)
+
+        [HttpPost("updatefeecycle")]
+        public async Task<ActionResult> UpdateFeeCycle([FromBody] FeeCycleView model)
         {
             //var rights = GetMyRights();
             //if (rights == null)
@@ -498,7 +500,7 @@ namespace GAPS.Kidzo.API.Controllers
                 school.FeeCycles[Array.IndexOf(school.FeeCycles, feeCycle)] = feeCycle;
             }
             await _schoolService.Update(school);
-            
+
             return Ok(feeCycle);
         }
 

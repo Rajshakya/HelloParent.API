@@ -165,4 +165,23 @@ namespace HelloParent.Entities.Enums
         /// </summary>
         RetryNeeded = 5
     }
+    public enum TransactionStatus
+    {
+        Pending,
+        Completed,
+        Cancelled
+    }
+    public enum AmountMode
+    {
+        Cash,
+        [Display(Name = "Bank Transfer")] BankDraft,
+        Cheque,
+        [Display(Name = "Online Payment")] OnlinePayement,
+        [Display(Name = "Card Payment")] CardPayment,
+        IMPS
+    }
+    public enum TransactionItemType
+    {
+        Fee
+    }
 }
