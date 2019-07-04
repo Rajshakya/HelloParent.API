@@ -12,26 +12,7 @@ using System.Threading.Tasks;
 
 namespace HelloParent.MongoBase.Repository
 {
-    //public class RepositoryHelper
-    //{
-    //    public static MongoClient CreateClient()
-    //    {
-    //        var url = MongoUrl.Create(AppSettings.DbUrl);
-    //        var setting = new MongoClientSettings
-    //        {
-    //            WaitQueueSize = 2000,
-    //            Servers = url.Servers,
-    //            MaxConnectionPoolSize = 1000,
-    //            UseSsl = true
-    //        };
-    //        var cred = url.GetCredential();
-    //        if (cred != null)
-    //        {
-    //            setting.Credential = cred;
-    //        }
-    //        return new MongoClient(setting);
-    //    }
-    //}
+   
     public class MongoRepository<T> : IRepository<T> where T : ITrackable, IEntity<ObjectId>
     {
         public IMongoCollection<T> Collection { get; private set; }
