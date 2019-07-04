@@ -33,4 +33,11 @@ namespace GAPS.Kidzo.API.Views
             public string SessionId { get; set; }
     }
 
+    public class CalculateFee
+    {
+        public string FeeCycleId { get; set; }
+        public string ClassId { get; set; }
+        public string SessionId { get; set; }
+    }
+
 }

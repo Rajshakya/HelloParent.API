@@ -439,8 +439,8 @@ namespace GAPS.Kidzo.API.Controllers
             return Ok(feeCycle);
         }
 
-        [HttpPost("CalCulateFeeForClass")]
-        public async Task<ActionResult> CalCulateFeeForClass(FeeCycleDashboardModel model)
+        [HttpPost("calculateFee")]
+        public async Task<ActionResult> CalCulateFeeForClass(CalculateFee model)
         {
             //var rights = GetMyRights();
             //if (rights == null)
