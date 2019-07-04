@@ -45,17 +45,18 @@ namespace HelloParent.Entities.Model
         public ObjectId SessionId { get; set; }
     }
 
-    public class FeeCycleDetailModel
-    {
-        public string SessionId { get; set; }
-        public string Name { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime LastDueDate { get; set; }
-        public double LateFee { get; set; }
-        public ObjectId Id { get; set; }
+    //public class FeeCycle
+    //{
+    //    public ObjectId Id { get; set; }
+    //    public string Name { get; set; }
+    //    public DateTime StartDate { get; set; }
+    //    public DateTime EndDate { get; set; }
+    //    public DateTime CreatedAt { get; set; }
+    //    public DateTime LastDueDate { get; set; }
+    //    public double LateFee { get; set; }
+    //    public string SessionId { get; set; }
 
-    }
+    //}
 
 
 }

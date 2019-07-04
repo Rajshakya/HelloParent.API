@@ -20,4 +20,17 @@ namespace GAPS.Kidzo.API.Views
         public string ActiveSessionName { get; set; }
         public int ToCheckUnapprovedStudents { get; set; }
     }
+
+    public class FeeCycleView
+    {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public DateTime LastDueDate { get; set; }
+            public double LateFee { get; set; }
+            public string SessionId { get; set; }
+    }
+
 }

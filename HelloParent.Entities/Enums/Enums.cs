@@ -135,23 +135,34 @@ namespace HelloParent.Entities.Enums
         [Display(Name = "Partial Paid")] PartialPaid,
         Cancelled
     }
-    public enum AmountMode
+    public enum JobStatus
     {
-        Cash,
-        [Display(Name = "Bank Transfer")] BankDraft,
-        Cheque,
-        [Display(Name = "Online Payment")] OnlinePayement,
-        [Display(Name = "Card Payment")] CardPayment,
-        IMPS
-    }
-    public enum TransactionItemType
-    {
-        Fee
-    }
-    public enum TransactionStatus
-    {
-        Pending,
-        Completed,
-        Cancelled
+        Unknown = 0,
+
+        /// <summary>
+        /// New job scheduled and ready to be picked.
+        /// </summary>
+        New = 1,
+
+        /// <summary>
+        /// Job is in progress so that same job is not picked twice.
+        /// </summary>
+        InProgress = 2,
+
+        /// <summary>
+        /// Job is completed.
+        /// </summary>
+        Completed = 3,
+
+        /// <summary>
+        /// Job failed in last execution.
+        /// </summary>
+        Failed = 4,
+
+        /// <summary>
+        /// Job status when retry is needed. Each job should decide if failure occurred to we retry or mark it as failed.
+        /// Failed jobs will be never be retried only retry needed jobs will be retried 3 times after which they will be marked as failed.
+        /// </summary>
+        RetryNeeded = 5
     }
 }
