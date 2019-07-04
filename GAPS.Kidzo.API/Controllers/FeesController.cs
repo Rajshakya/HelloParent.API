@@ -25,15 +25,18 @@ namespace GAPS.Kidzo.API.Controllers
         private readonly ISchoolService _schoolService;
         private readonly ISchoolClassService _schoolClassService;
         private readonly IStudentService _studentService;
-        public FeesController(IFeeService feeService, ISchoolService schoolService, ISchoolClassService schoolClassService,
-            IStudentService studentService, IMapperService mapperService)
+        private readonly IUserService _userService;
+        private readonly ITransactionService _transactionService;
+        public FeesController(IFeeService feeService, ISchoolService schoolService, ISchoolClassService schoolClassService,ITransactionService transactionService,
+            IStudentService studentService, IMapperService mapperService,IUserService userService)
         {
             this._feeService = feeService;
             this._schoolService = schoolService;
             this._schoolClassService = schoolClassService;
             this._studentService = studentService;
             this._mapperService = mapperService;
-       //     this._userService = userService;
+            this._userService = userService;
+            this._transactionService = transactionService;
         }
         [HttpGet("fees")]
         public async Task<ActionResult> GetFees()
@@ -72,7 +75,7 @@ namespace GAPS.Kidzo.API.Controllers
                     var student =
                         await
                             _studentService.Get(
-                                x => activeClassIds.Contains(x.ClassId) && x.DeactivateDate == null && x.SchoolId == school.Id);
+                                x => activeClassIds.Contains(x.ClassId) && x.DeactivateDate == null && x.SchoolId == school.Id && x.DeletedAt==null);
 
                     if (!school.FeeCycles.Any())
                     {
@@ -266,9 +269,9 @@ namespace GAPS.Kidzo.API.Controllers
             if (feeModel.FeeIds.Any())
             {
                 var msg = "";
-                var Testing_UserId = Constants.TestingUser_Id;
-                // Raj    var user = await _userService.GetById(User.Identity.GetUserId());
-                var user = new ApplicationUser();
+                var user = await _userService.GetById(Constants.TestingUser_Id);
+                // var user = new ApplicationUser();
+                user.Id = Constants.TestingUser_Id;
                 var ids = feeModel.FeeIds.Select(x => x.AsObjectId());
 
                 //var allCalculatedFee =
@@ -288,35 +291,30 @@ namespace GAPS.Kidzo.API.Controllers
                     //fee.ApprovedDate = DateTime.Now;
                     //fee.ApprovedBy = User.Identity.GetUserId();
 
-        //            //fee.FeeStatus = FeeStatus.Approved;
+                    //fee.FeeStatus = FeeStatus.Approved;
 
-        //            //if (feeModel.IsNotification) {
-        //            //    notificationStudentList.Add(fee.StudentId);
-        //            //}
+                    //if (feeModel.IsNotification) {
+                    //    notificationStudentList.Add(fee.StudentId);
+                    //}
 
 
-        //            msg = "Fees have been approved successfully";
-        //        }
-        //        else
-        //        {
-        //            if (feeModel.Command == "Cancel fees")
-        //            {
-        //                await
-        //                    _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Cancelled,
-        //                        user);
-        //                //fee.CancelledDate = DateTime.Now;
-        //                //fee.CancelledBy = User.Identity.GetUserId();
-        //                //fee.Remark = feeModel.ReasonToSend;
-        //                //fee.FeeStatus = FeeStatus.Cancelled;
-        //                msg = "Fees have been cancelled successfully";
-        //            }
-        //        }
-        //        //await _feeService.Update(fee);
-        //        // }
-
-                // }
-                // }
-                // TempData["SuccessMessage"] = msg;  Raj
+                    msg = "Fees have been approved successfully";
+                }
+                else
+                {
+                    if (feeModel.Command == "Cancel fees")
+                    {
+                        await
+                            _feeService.UpdateFeeStatus(ids, feeModel.IsNotification, FeeStatus.Cancelled,
+                                user);
+                        //fee.CancelledDate = DateTime.Now;
+                        //fee.CancelledBy = User.Identity.GetUserId();
+                        //fee.Remark = feeModel.ReasonToSend;
+                        //fee.FeeStatus = FeeStatus.Cancelled;
+                        msg = "Fees have been cancelled successfully";
+                    }
+                }
+             
             }
             return Ok();
         }
@@ -405,7 +403,66 @@ namespace GAPS.Kidzo.API.Controllers
             }
         }
 
-        public async Task<ActionResult> UpdateFeeCycle(FeeCycleDetailModel model)
+        [HttpGet("updatefee/{id}/{feestatus}")]
+        public async Task<ActionResult> UpdateFee(string id, string feeStatus)
+        {
+           
+           
+            var fees = await _feeService.Get(x => x.Id == id.AsObjectId());
+            var fee = fees.FirstOrDefault();
+            var model = new FeeCollectionComponentViewModel();
+           
+            model.OnlinePayment = false;
+            foreach (var tran in fee.Transactions)
+            {
+                var transcaions = await _transactionService.Get(x => x.Id == tran.TransactionId);
+                var transcaion = transcaions.FirstOrDefault();
+                if (transcaion != null)
+                {
+                    if (transcaion.AmountMode == AmountMode.OnlinePayement)
+                    {
+                        model.OnlinePayment = true;
+                    }
+                }
+
+            }
+
+            var school = await _schoolService.GetSchoolById(fee.SchoolId.ToString());
+            var schoolComponent = school.SchoolFeeComponents;
+
+            var allPaidComponents = fee.Transactions.SelectMany(x => x.Components);
+            var dict = allPaidComponents.GroupBy(x => x.ComponetId)
+                .ToDictionary(x => x.Key, x => x.Sum(p => p.Value));
+
+            foreach (var comp in fee.Components)
+            {
+                var feeComp = new ComponentsViewModel
+                {
+                    ComponetId = comp.ComponetId.ToString(),
+                    Value = comp.Value
+                };
+                var schoolCompSingle = schoolComponent.FirstOrDefault(x => x.Id == comp.ComponetId);
+                if (schoolCompSingle != null)
+                {
+                    feeComp.Name = schoolCompSingle.Name;
+                }
+                var paidVal = 0.0;
+                if (dict.ContainsKey(comp.ComponetId))
+                {
+                    paidVal = paidVal + dict[comp.ComponetId];
+                }
+                feeComp.Paid = paidVal;
+                model.Components.Add(feeComp);
+            }
+
+            model.FeeId = id;
+           
+            model.Remark = fee.Remark;
+         
+            model.FeeStatus = feeStatus;
+            return Ok(model);
+        }
+            public async Task<ActionResult> UpdateFeeCycle(FeeCycleDetailModel model)
         {
             //var rights = GetMyRights();
             //if (rights == null)
@@ -441,6 +498,28 @@ namespace GAPS.Kidzo.API.Controllers
             return RedirectToAction("FeeCycleDashboard", new { id = model.Id});
         }
 
+        [HttpPost("UpdateFee")]
+        public async Task<ActionResult> UpdateFee(FeeCollectionComponentViewModel model)
+        {
+           
+            var feeCollections = await _feeService.Get(x => x.Id == model.FeeId.AsObjectId());
+            var fee = feeCollections.FirstOrDefault();
 
+            if (fee == null)
+            {
+                return RedirectToAction("Index", new { model.ClassId, model.FeeCycleId, model.StudentId });
+            }
+            var feeComponents = model.Components.ToDictionary(comp =>
+                comp.ComponetId.AsObjectId(),
+                comp => comp.Value
+                );
+
+            var school = await _schoolService.GetSchoolById(fee.SchoolId.ToString());
+
+            FeeStatus feeStatus = (FeeStatus)Enum.Parse(typeof(FeeStatus), model.FeeStatus);
+            await _feeService.UpdateStudentFee(feeComponents, fee.Id, school, feeStatus, remark: model.Remark);
+
+            return Ok();
+        }
     }
 }

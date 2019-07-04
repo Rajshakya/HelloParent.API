@@ -135,4 +135,23 @@ namespace HelloParent.Entities.Enums
         [Display(Name = "Partial Paid")] PartialPaid,
         Cancelled
     }
+    public enum AmountMode
+    {
+        Cash,
+        [Display(Name = "Bank Transfer")] BankDraft,
+        Cheque,
+        [Display(Name = "Online Payment")] OnlinePayement,
+        [Display(Name = "Card Payment")] CardPayment,
+        IMPS
+    }
+    public enum TransactionItemType
+    {
+        Fee
+    }
+    public enum TransactionStatus
+    {
+        Pending,
+        Completed,
+        Cancelled
+    }
 }
