@@ -16,11 +16,13 @@ namespace HelloParent.Services
    public class FeeService : MongoBaseService<Fee>, IFeeService
     {
         private readonly ISchoolService _schoolService;
+        private readonly ISchoolClassService _schoolClassService;
         private readonly IStudentService _studentService;
-        public FeeService(IRepository<Fee> repository, ISchoolService schoolService,IStudentService studentService) : base(repository)
+        public FeeService(IRepository<Fee> repository, ISchoolService schoolService,IStudentService studentService,ISchoolClassService schoolClassService) : base(repository)
         {
             this._schoolService = schoolService;
             this._studentService = studentService;
+            this._schoolClassService = schoolClassService;
         }
 
         public Task CreateAndSendInvoice(bool sendNotification, Transaction transaction, School school, ApplicationUser userWithFeeRight)
@@ -33,9 +35,280 @@ namespace HelloParent.Services
             throw new NotImplementedException();
         }
 
-        public Task<Fee> GenerateFee(Student student, FeeCycle cycle, School school)
+        public async Task<Fee> GenerateFee(Student student, FeeCycle cycle, School school)
         {
-            throw new NotImplementedException();
+            var feesForStudent = await Get(x => x.StudentId == student.Id);
+            var classForStudent = await _schoolClassService.GetById(student.ClassId);
+            var allFeeForStudentExcludingCancelled =
+                feesForStudent.Where(x => x.FeeStatus != FeeStatus.Cancelled).ToList();
+            var feesData = feesForStudent.Where(x => x.FeeCycleId == cycle.Id && x.StudentId == student.Id).ToList();
+            var singleExistingFee = feesData.FirstOrDefault();
+            if (feesData.Count() > 1)
+            {
+                singleExistingFee = feesData.OrderByDescending(x => x.CreatedAt).FirstOrDefault();
+            }
+            if (singleExistingFee != null && singleExistingFee.FeeStatus == FeeStatus.Cancelled)
+            {
+                singleExistingFee = null;
+            }
+            var fee = new Fee();
+            if (singleExistingFee != null)
+            {
+                if (singleExistingFee.FeeStatus == FeeStatus.Approved || singleExistingFee.FeeStatus == FeeStatus.Paid ||
+                    singleExistingFee.FeeStatus == FeeStatus.PartialPaid)
+                {
+                    return singleExistingFee;
+                }
+                fee = singleExistingFee;
+                fee.Components = new Component[] { };
+            }
+            else
+            {
+                fee.StudentId = student.Id;
+                fee.FeeCycleId = cycle.Id;
+                fee.SchoolId = school.Id;
+                fee.Components = new Component[] { };
+            }
+            fee.FeeStatus = FeeStatus.PendingApproval;
+            fee.CancelledBy = null;
+            fee.CancelledBy = null;
+            var schoolFeeComponets = school.SchoolFeeComponents;
+            var schoolComponentDict = schoolFeeComponets.ToDictionary(x => x.Id, x => x);
+
+
+            if (student.FeeComponets.Length == 0)
+            {
+                var studentClassFeeComponent = await GetChildFeesComponents(cycle.SessionId, student);
+                if (studentClassFeeComponent == null)
+                {
+                    return null;
+                }
+                if (studentClassFeeComponent.Length <= 0)
+                {
+                    return null;
+                }
+                foreach (var component in studentClassFeeComponent)
+                {
+                    if (!schoolComponentDict.ContainsKey(component.SchoolFeeComponentId))
+                    {
+                        continue;
+                    }
+                    var parent = schoolComponentDict[component.SchoolFeeComponentId];
+                    if (parent.Periodicity == Periodicity.Monthly)
+                    {
+                        var toaddComp = new Component
+                        {
+                            ComponetId = component.SchoolFeeComponentId,
+                            Value = component.Value
+                        };
+                        fee.Components = fee.Components != null
+                            ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                            : new[] { toaddComp };
+                    }
+
+                    if (parent.Periodicity == Periodicity.OneTime)
+                    {
+                        var already =
+                            allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                x =>
+                                    x.Id != fee.Id &&
+                                    x.Components.Select(y => y.ComponetId).Contains(component.SchoolFeeComponentId));
+
+                        if (already == null)
+                        {
+                            var toaddComp = new Component
+                            {
+                                ComponetId = component.SchoolFeeComponentId,
+                                Value = component.Value
+                            };
+                            fee.Components = fee.Components != null
+                                ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                : new[] { toaddComp };
+                        }
+                    }
+
+
+                    if (parent.Periodicity == Periodicity.Yearly)
+                    {
+                        var allCycleForThisSession =
+                            school.FeeCycles.Where(x => x.SessionId == cycle.SessionId).Select(x => x.Id);
+                        var already =
+                            allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                x =>
+                                    x.Id != fee.Id && allCycleForThisSession.Contains(x.FeeCycleId) &&
+                                    x.Components.Select(y => y.ComponetId).Contains(component.SchoolFeeComponentId));
+
+                        if (already == null)
+                        {
+                            var toaddComp = new Component
+                            {
+                                ComponetId = component.SchoolFeeComponentId,
+                                Value = component.Value
+                            };
+                            fee.Components = fee.Components != null
+                                ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                : new[] { toaddComp };
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var studentFeeComponent = student.FeeComponets;
+
+
+                foreach (var superComp in schoolFeeComponets)
+                {
+                    var isExistingInStudent =
+                        studentFeeComponent.FirstOrDefault(x => x.SchoolFeeComponentId == superComp.Id);
+                    if (isExistingInStudent != null)
+                    {
+                        if (!schoolComponentDict.ContainsKey(isExistingInStudent.SchoolFeeComponentId))
+                        {
+                            continue;
+                        }
+                        var parent = schoolComponentDict[isExistingInStudent.SchoolFeeComponentId];
+                        if (parent.Periodicity == Periodicity.Monthly)
+                        {
+                            var toaddComp = new Component
+                            {
+                                ComponetId = isExistingInStudent.SchoolFeeComponentId,
+                                Value = isExistingInStudent.Value
+                            };
+                            fee.Components = fee.Components != null
+                                ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                : new[] { toaddComp };
+                        }
+
+                        if (parent.Periodicity == Periodicity.OneTime)
+                        {
+                            var already =
+                                allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                    x =>
+                                        x.Id != fee.Id &&
+                                        x.Components.Select(y => y.ComponetId)
+                                            .Contains(isExistingInStudent.SchoolFeeComponentId));
+
+                            if (already == null)
+                            {
+                                var toaddComp = new Component
+                                {
+                                    ComponetId = isExistingInStudent.SchoolFeeComponentId,
+                                    Value = isExistingInStudent.Value
+                                };
+                                fee.Components = fee.Components != null
+                                    ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                    : new[] { toaddComp };
+                            }
+                        }
+
+
+                        if (parent.Periodicity == Periodicity.Yearly)
+                        {
+                            var allCycleForThisSession =
+                                school.FeeCycles.Where(x => x.SessionId == cycle.SessionId).Select(x => x.Id);
+                            var already =
+                                allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                    x =>
+                                        x.Id != fee.Id && allCycleForThisSession.Contains(x.FeeCycleId) &&
+                                        x.Components.Select(y => y.ComponetId)
+                                            .Contains(isExistingInStudent.SchoolFeeComponentId));
+
+                            if (already == null)
+                            {
+                                var toaddComp = new Component
+                                {
+                                    ComponetId = isExistingInStudent.SchoolFeeComponentId,
+                                    Value = isExistingInStudent.Value
+                                };
+                                fee.Components = fee.Components != null
+                                    ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                    : new[] { toaddComp };
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var isExistingInClass =
+                            classForStudent.FeeComponets.FirstOrDefault(x => x.SchoolFeeComponentId == superComp.Id);
+                        if (isExistingInClass != null)
+                        {
+                            if (!schoolComponentDict.ContainsKey(isExistingInClass.SchoolFeeComponentId))
+                            {
+                                continue;
+                            }
+                            var parent = schoolComponentDict[isExistingInClass.SchoolFeeComponentId];
+                            if (parent.Periodicity == Periodicity.Monthly)
+                            {
+                                var toaddComp = new Component
+                                {
+                                    ComponetId = isExistingInClass.SchoolFeeComponentId,
+                                    Value = isExistingInClass.Value
+                                };
+                                fee.Components = fee.Components != null
+                                    ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                    : new[] { toaddComp };
+                            }
+
+                            if (parent.Periodicity == Periodicity.OneTime)
+                            {
+                                var already =
+                                    allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                        x =>
+                                            x.Id != fee.Id &&
+                                            x.Components.Select(y => y.ComponetId)
+                                                .Contains(isExistingInClass.SchoolFeeComponentId));
+
+                                if (already == null)
+                                {
+                                    var toaddComp = new Component
+                                    {
+                                        ComponetId = isExistingInClass.SchoolFeeComponentId,
+                                        Value = isExistingInClass.Value
+                                    };
+                                    fee.Components = fee.Components != null
+                                        ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                        : new[] { toaddComp };
+                                }
+                            }
+
+
+                            if (parent.Periodicity == Periodicity.Yearly)
+                            {
+                                var allCycleForThisSession =
+                                    school.FeeCycles.Where(x => x.SessionId == cycle.SessionId).Select(x => x.Id);
+                                var already =
+                                    allFeeForStudentExcludingCancelled.FirstOrDefault(
+                                        x =>
+                                            x.Id != fee.Id && allCycleForThisSession.Contains(x.FeeCycleId) &&
+                                            x.Components.Select(y => y.ComponetId)
+                                                .Contains(isExistingInClass.SchoolFeeComponentId));
+
+                                if (already == null)
+                                {
+                                    var toaddComp = new Component
+                                    {
+                                        ComponetId = isExistingInClass.SchoolFeeComponentId,
+                                        Value = isExistingInClass.Value
+                                    };
+                                    fee.Components = fee.Components != null
+                                        ? fee.Components.Concat(new[] { toaddComp }).ToArray()
+                                        : new[] { toaddComp };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (fee.Id == ObjectId.Empty || fee.FeeStatus == FeeStatus.Cancelled)
+            {
+                await Add(fee);
+            }
+            else
+            {
+                await Update(fee);
+            }
+            return fee;
         }
 
         public Task GenerateFeeCycles(ObjectId sessionId, ObjectId schoolId)
@@ -216,6 +489,17 @@ namespace HelloParent.Services
                 fee.Remark = remark;
                 await Update(fee);
             }
+        }
+
+        public async Task<FeeComponent[]> GetChildFeesComponents(ObjectId sessionId, Student student)
+        {
+            var classesData = await _schoolClassService.Get(x => x.SessionId == sessionId && x.Id == student.ClassId);
+            var singleClass = classesData.FirstOrDefault();
+            if (singleClass != null)
+            {
+                return singleClass.FeeComponets;
+            }
+            return null;
         }
     }
 }

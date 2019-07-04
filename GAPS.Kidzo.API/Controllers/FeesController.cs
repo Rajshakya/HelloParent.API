@@ -572,9 +572,9 @@ namespace GAPS.Kidzo.API.Controllers
             }
             if (existingcount > 0 && count == 0)
             {
-                return BadRequest("The fee has been already calculated for this class");
+                return Ok("The fee has been already calculated for this class");
             }
-            return BadRequest("Fee for {0} students has been calculated successfully");
+            return Ok("Fee for students has been calculated successfully");
         }
 
         [HttpPost("UpdateFee")]
