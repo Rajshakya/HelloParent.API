@@ -137,116 +137,122 @@ namespace GAPS.Kidzo.API.Controllers
                         allCalculatedFee =
                             allCalculatedFee.Where(x => model.FeeStatus.Contains(x.FeeStatus.ToString())).ToList();
                     }
-
-                    var sortedFees =
-                        allCalculatedFee.OrderByDescending(x => x.CreatedAt)
-                            .ThenBy(x => x.FeeStatus == FeeStatus.PendingApproval);
-                    var classDict = allClassesForSchool.OrderBy(x => x.Name)
-                   .ToDictionary(x => x.Id.ToString(), x => x.Name);
-                    foreach (var fee in sortedFees)
+                    if (allCalculatedFee.Count > 0)
                     {
-                        var singleFeeModel = new FeeStudentModel
+                        var sortedFees =
+                            allCalculatedFee.OrderByDescending(x => x.CreatedAt)
+                                .ThenBy(x => x.FeeStatus == FeeStatus.PendingApproval);
+
+                        var classDict = allClassesForSchool.OrderBy(x => x.Name)
+                       .ToDictionary(x => x.Id.ToString(), x => x.Name);
+                        foreach (var fee in sortedFees)
                         {
-                            StudentId = fee.StudentId.ToString(),
-                            FeeId = fee.Id.ToString(),
-                            FeeStatus = EnumHelper.DisplayName(typeof(FeeStatus), fee.FeeStatus.ToString()),
-                            FeeStatusEnum = fee.FeeStatus,
-                            Remark = fee.Remark,
-                            CreateAt = fee.CreatedAt,
-                            Checked = true
-                        };
-
-                        var singleStudent = students.FirstOrDefault(x => x.Id == fee.StudentId);
-                        singleFeeModel.ClassName = allClassesForSchool.First(x => x.Id == singleStudent.ClassId).Name;
-                        var feeCycleForFee = allfeeCycle.FirstOrDefault(x => x.Id == fee.FeeCycleId);
-                        var totalPayable = Math.Round(fee.GetPendingFee(DateTime.Now, feeCycleForFee, school, singleStudent.JoiningDate), 2);
-                        singleFeeModel.TotalPayable = totalPayable > 0
-                            ? Math.Round(fee.GetPendingFee(DateTime.Now, feeCycleForFee, school, singleStudent.JoiningDate), 2)
-                            : 0;
-
-                        singleFeeModel.TotalPaid = fee.Transactions.Sum(x => x.Amount);
-                        singleFeeModel.FeeCycle = _mapperService.MapFeeCycleToFeeCycleSingleModel(feeCycleForFee);
-
-                        //var singleStudent = students.FirstOrDefault(x => x.Id == fee.StudentId);
-                        if (singleStudent != null)
-                        {
-                            singleFeeModel.StudentName = singleStudent.Name;
-                            singleFeeModel.AdmNumber = singleStudent.Identifier;
-                            singleFeeModel.StudentMotherName = singleStudent.MotherName;
-                            singleFeeModel.StudentClass = classDict.ContainsKey(singleStudent.ClassId.ToString())
-                                ? classDict[singleStudent.ClassId.ToString()]
-                                : string.Empty;
-                            singleFeeModel.StudentFeeFrequency = EnumHelper.DisplayName(
-                                typeof(StudentFeeFrequency), singleStudent.FeeFrequency.ToString());
-                        }
-
-                        if (Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date > feeCycleForFee.LastDueDate.ToLocalTime().Date)
-                        {
-                            singleFeeModel.LateFee = Math.Round(fee.GetTotalLateFeesOfLateJoinedStudent(school, DateTime.Today, feeCycleForFee, Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date), 2);
-                        }
-                        else
-                        {
-                            singleFeeModel.LateFee = Math.Round(fee.GetTotalLateFees(school, DateTime.Today, feeCycleForFee), 2);
-                        }
-
-                        //singleFeeModel.LateFee = fee.GetTotalLateFees(school, DateTime.Today, feeCycleForFee);
-
-
-                        if (fee.ApprovedBy != null || fee.CancelledBy != null)
-                        {
-                            singleFeeModel.ApprovedById = fee.ApprovedBy;
-                            singleFeeModel.CancelledById = fee.CancelledBy;
-                        }
-                        else
-                        {
-                            model.ToCheckUnapprovedStudents = model.ToCheckUnapprovedStudents + 1;
-                        }
-
-
-                        foreach (var component in fee.Components)
-                        {
-                            var singleComponentModel = new FeeModel
+                            var singleFeeModel = new FeeStudentModel
                             {
-                                ComponentValue = component.Value,
-                                SchoolFeeComponentId = component.ComponetId.ToString()
+                                StudentId = fee.StudentId.ToString(),
+                                FeeId = fee.Id.ToString(),
+                                FeeStatus = EnumHelper.DisplayName(typeof(FeeStatus), fee.FeeStatus.ToString()),
+                                FeeStatusEnum = fee.FeeStatus,
+                                Remark = fee.Remark,
+                                CreateAt = fee.CreatedAt,
+                                Checked = true
                             };
 
-                            singleFeeModel.TotalFeeForStudent = Math.Round(singleFeeModel.TotalFeeForStudent +
-                                                                           singleComponentModel.ComponentValue,
-                                2);
+                            var singleStudent = students.FirstOrDefault(x => x.Id == fee.StudentId);
+                            singleFeeModel.ClassName = allClassesForSchool.First(x => x.Id == singleStudent.ClassId).Name;
+                            var feeCycleForFee = allfeeCycle.FirstOrDefault(x => x.Id == fee.FeeCycleId);
+                            var totalPayable = Math.Round(fee.GetPendingFee(DateTime.Now, feeCycleForFee, school, singleStudent.JoiningDate), 2);
+                            singleFeeModel.TotalPayable = totalPayable > 0
+                                ? Math.Round(fee.GetPendingFee(DateTime.Now, feeCycleForFee, school, singleStudent.JoiningDate), 2)
+                                : 0;
 
-                            var singlecomponent =
-                                schoolComponents.FirstOrDefault(x => x.Id == component.ComponetId);
-                            if (singlecomponent != null)
+                            singleFeeModel.TotalPaid = fee.Transactions.Sum(x => x.Amount);
+                            singleFeeModel.FeeCycle = _mapperService.MapFeeCycleToFeeCycleSingleModel(feeCycleForFee);
+
+                            //var singleStudent = students.FirstOrDefault(x => x.Id == fee.StudentId);
+                            if (singleStudent != null)
                             {
-                                singleComponentModel.ComponentName = singlecomponent.Name;
+                                singleFeeModel.StudentName = singleStudent.Name;
+                                singleFeeModel.AdmNumber = singleStudent.Identifier;
+                                singleFeeModel.StudentMotherName = singleStudent.MotherName;
+                                singleFeeModel.StudentClass = classDict.ContainsKey(singleStudent.ClassId.ToString())
+                                    ? classDict[singleStudent.ClassId.ToString()]
+                                    : string.Empty;
+                                singleFeeModel.StudentFeeFrequency = EnumHelper.DisplayName(
+                                    typeof(StudentFeeFrequency), singleStudent.FeeFrequency.ToString());
                             }
-                            singleFeeModel.StudentAllFee = singleFeeModel.StudentAllFee != null
-                                ? singleFeeModel.StudentAllFee.Concat(new[] { singleComponentModel }).ToArray()
-                                : new[] { singleComponentModel };
 
-                            singleFeeModel.ComponetDict = singleFeeModel.StudentAllFee.GroupBy(
-                                x => x.SchoolFeeComponentId.ToString()).ToDictionary(
-                                    x => x.Key, x => x.First().ComponentValue);
+                            if (Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date > feeCycleForFee.LastDueDate.ToLocalTime().Date)
+                            {
+                                singleFeeModel.LateFee = Math.Round(fee.GetTotalLateFeesOfLateJoinedStudent(school, DateTime.Today, feeCycleForFee, Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date), 2);
+                            }
+                            else
+                            {
+                                singleFeeModel.LateFee = Math.Round(fee.GetTotalLateFees(school, DateTime.Today, feeCycleForFee), 2);
+                            }
+
+                            //singleFeeModel.LateFee = fee.GetTotalLateFees(school, DateTime.Today, feeCycleForFee);
+
+
+                            if (fee.ApprovedBy != null || fee.CancelledBy != null)
+                            {
+                                singleFeeModel.ApprovedById = fee.ApprovedBy;
+                                singleFeeModel.CancelledById = fee.CancelledBy;
+                            }
+                            else
+                            {
+                                model.ToCheckUnapprovedStudents = model.ToCheckUnapprovedStudents + 1;
+                            }
+
+
+                            foreach (var component in fee.Components)
+                            {
+                                var singleComponentModel = new FeeModel
+                                {
+                                    ComponentValue = component.Value,
+                                    SchoolFeeComponentId = component.ComponetId.ToString()
+                                };
+
+                                singleFeeModel.TotalFeeForStudent = Math.Round(singleFeeModel.TotalFeeForStudent +
+                                                                               singleComponentModel.ComponentValue,
+                                    2);
+
+                                var singlecomponent =
+                                    schoolComponents.FirstOrDefault(x => x.Id == component.ComponetId);
+                                if (singlecomponent != null)
+                                {
+                                    singleComponentModel.ComponentName = singlecomponent.Name;
+                                }
+                                singleFeeModel.StudentAllFee = singleFeeModel.StudentAllFee != null
+                                    ? singleFeeModel.StudentAllFee.Concat(new[] { singleComponentModel }).ToArray()
+                                    : new[] { singleComponentModel };
+
+                                singleFeeModel.ComponetDict = singleFeeModel.StudentAllFee.GroupBy(
+                                    x => x.SchoolFeeComponentId.ToString()).ToDictionary(
+                                        x => x.Key, x => x.First().ComponentValue);
+                            }
+                            FeeStudentView.FeeStudents = FeeStudentView.FeeStudents != null
+                            ? FeeStudentView.FeeStudents.Concat(new[] { singleFeeModel }).ToArray()
+                            : new[] { singleFeeModel };
                         }
-                        FeeStudentView.FeeStudents = FeeStudentView.FeeStudents != null
-                        ? FeeStudentView.FeeStudents.Concat(new[] { singleFeeModel }).ToArray()
-                        : new[] { singleFeeModel };
-                    }
-                    FeeStudentView.Maxdata =
-                  FeeStudentView.FeeStudents.OrderByDescending(x => x.StudentAllFee.Length).FirstOrDefault();
-                    if (FeeStudentView.Maxdata != null)
-                    {
-                        FeeStudentView.FeeComponentWithDictinctValueDict =
-                            FeeStudentView.Maxdata.StudentAllFee.GroupBy(x => x.SchoolFeeComponentId)
-                                .ToDictionary(x => x.Key,
-                                    x => x.First().ComponentValue
-                                );
+                        FeeStudentView.Maxdata =
+                      FeeStudentView.FeeStudents.OrderByDescending(x => x.StudentAllFee.Length).FirstOrDefault();
+                        if (FeeStudentView.Maxdata != null)
+                        {
+                            FeeStudentView.FeeComponentWithDictinctValueDict =
+                                FeeStudentView.Maxdata.StudentAllFee.GroupBy(x => x.SchoolFeeComponentId)
+                                    .ToDictionary(x => x.Key,
+                                        x => x.First().ComponentValue
+                                    );
+                        }
                     }
                 }
-                FeeStudentView.FeeStudents =
-               FeeStudentView.FeeStudents.OrderBy(x => x.FeeCycle.LastDueDate).ThenBy(x => x.StudentName).ToArray();
-                return Ok(FeeStudentView);
+                if (FeeStudentView.FeeStudents != null && FeeStudentView.FeeStudents.Length > 0)
+                {
+                    FeeStudentView.FeeStudents =
+                   FeeStudentView.FeeStudents.OrderBy(x => x.FeeCycle.LastDueDate).ThenBy(x => x.StudentName).ToArray();
+                }
+                    return Ok(FeeStudentView);
 
 
             }
