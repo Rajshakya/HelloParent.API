@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GAPS.Kidzo.API", "GAPS.Kidzo.API\GAPS.Kidzo.API.csproj", "{22CFBC37-2333-4622-9E0A-6CEDE910DCE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent", "GAPS.Kidzo.API\HelloParent.csproj", "{22CFBC37-2333-4622-9E0A-6CEDE910DCE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.Entities", "HelloParent.Entities\HelloParent.Entities.csproj", "{1819AF68-4AE7-4D79-8621-7A11C3986590}"
 EndProject
@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.MockData", "Hel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.MongoBase.Repository", "HelloParent.MongoBase.Repository\HelloParent.MongoBase.Repository.csproj", "{39EE1A59-3AE4-4025-88F5-D631363569BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloParent.Utilities", "HelloParent.Utilities\HelloParent.Utilities.csproj", "{75DA1A87-157C-49EC-82FD-ECEE1A824710}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.Utilities", "HelloParent.Utilities\HelloParent.Utilities.csproj", "{75DA1A87-157C-49EC-82FD-ECEE1A824710}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloParent.Base.Repository", "HelloParent.Base.Repository\HelloParent.Base.Repository.csproj", "{D427F478-F2E1-4590-AA8D-5F4AEADB62CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloParent.Base.Repository", "HelloParent.Base.Repository\HelloParent.Base.Repository.csproj", "{D427F478-F2E1-4590-AA8D-5F4AEADB62CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

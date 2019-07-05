@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HelloParent.Auth;
 using HelloParent.Base.Repository.Interfaces;
 using HelloParent.Entities.LMS;
 using HelloParent.IServices;
 using HelloParent.Utilities.Constants;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace GAPS.Kidzo.API.Controllers
+namespace HelloParent.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   
-    public class BooksController : ControllerBase
+    public class BooksController : BaseAuthenticatedController
     {
         private readonly IBookService _bookService;
         private readonly IMapperService _mapperService;
         private readonly IBookRepository _bookRepository;
 
-        public BooksController(IBookService bookService,IMapperService mapperService,
+        public BooksController(IBookService bookService, IMapperService mapperService,
             IBookRepository bookRepository)
         {
             _bookService = bookService;
@@ -40,9 +38,9 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var id = Constants.TestingSchool_Id;
-                var result =await _bookRepository.GetBooks(id);
-                var mappedResult = _mapperService.MapBookToBookView(result.ToList());
+                string id = Constants.TestingSchool_Id;
+                IEnumerable<Book> result = await _bookRepository.GetBooks(id);
+                IList<BookViews> mappedResult = _mapperService.MapBookToBookView(result.ToList());
                 return Ok(mappedResult);
             }
             catch (ArgumentNullException argNullEx)
@@ -66,14 +64,14 @@ namespace GAPS.Kidzo.API.Controllers
         /// <returns>boolean</returns>
         [HttpPost]
         [Route("~/api/books/{quantity}")]
-        public async Task<IActionResult> AddBook([FromBody] Book book,int quantity)
+        public async Task<IActionResult> AddBook([FromBody] Book book, int quantity)
         {
             try
             {
                 for (int i = 0; i < quantity; i++)
                 {
                     book.SchoolId = Constants.TestingSchool_Id;
-                    var result = await _bookRepository.AddBook(book);
+                    long result = await _bookRepository.AddBook(book);
                 }
                 return Ok(true);
             }
@@ -101,7 +99,7 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var result =await _bookService.UpdateBook(book);
+                bool result = await _bookService.UpdateBook(book);
                 return Ok(result);
             }
             catch (ArgumentNullException argNullEx)
@@ -118,6 +116,6 @@ namespace GAPS.Kidzo.API.Controllers
             }
         }
 
-      
+
     }
 }
