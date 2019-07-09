@@ -513,15 +513,7 @@ namespace GAPS.Kidzo.API.Controllers
         [HttpPost("calculateFee")]
         public async Task<ActionResult> CalCulateFeeForClass(CalculateFee model)
         {
-            //var rights = GetMyRights();
-            //if (rights == null)
-            //{
-            //    return RedirectToAction("LogOff", "Account");
-            //}
-            //if (!rights.CanManageFee)
-            //{
-            //    return RedirectToAction("Index", "Messages");
-            //}
+          
             var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
             var activeSessions = school.GetActiveSession();
 

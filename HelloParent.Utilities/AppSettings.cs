@@ -46,8 +46,9 @@ namespace HelloParent.Utilities
         /// </summary>
         private static void FillAppSettings()
         {
+
             //Todo : Check for null value
-            DbUrl = "mongodb://helloparent_db:L0OJKBlSxOUqXESr@cluster-hp-shard-00-00-xdc7b.azure.mongodb.net:27017,cluster-hp-shard-00-01-xdc7b.azure.mongodb.net:27017,cluster-hp-shard-00-02-xdc7b.azure.mongodb.net:27017/test?ssl=true&replicaSet=cluster-hp-shard-0&authSource=admin&retryWrites=true";
+            DbUrl = "mongodb://helloparent_db:L0OJKBlSxOUqXESr@beta-shard-00-00-xdc7b.azure.mongodb.net:27017,beta-shard-00-01-xdc7b.azure.mongodb.net:27017,beta-shard-00-02-xdc7b.azure.mongodb.net:27017/test?ssl=true&replicaSet=beta-shard-0&authSource=admin&retryWrites=true&w=majority";
 
             DbEnv = config.GetSection("AppSettings:DbEnv") != null ? config.GetSection("AppSettings:DbEnv").Value : "";
 
