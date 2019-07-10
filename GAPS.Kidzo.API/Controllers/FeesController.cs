@@ -185,6 +185,7 @@ namespace GAPS.Kidzo.API.Controllers
                             if (Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date > feeCycleForFee.LastDueDate.ToLocalTime().Date)
                             {
                                 singleFeeModel.LateFee = Math.Round(fee.GetTotalLateFeesOfLateJoinedStudent(school, DateTime.Today, feeCycleForFee, Convert.ToDateTime(singleStudent.JoiningDate).ToLocalTime().Date), 2);
+                             
                             }
                             else
                             {
@@ -252,6 +253,22 @@ namespace GAPS.Kidzo.API.Controllers
                     FeeStudentView.FeeStudents =
                    FeeStudentView.FeeStudents.OrderBy(x => x.FeeCycle.LastDueDate).ThenBy(x => x.StudentName).ToArray();
                 }
+                if (FeeStudentView.FeeStudents != null)
+                {
+                    foreach (var fee in FeeStudentView.FeeStudents)
+                    {
+                        if (fee.FeeCycle.LastDueDate.ToLocalTime().Date < DateTime.Today.Date)
+                        {
+                            fee.LateFee = fee.LateFee;
+                        }
+                        else
+                        {
+                            fee.LateFee = null;
+                        }
+
+                    }
+                }
+
                     return Ok(FeeStudentView);
 
 
