@@ -57,15 +57,16 @@ namespace HelloParent.Controllers
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(ClaimTypes.Name, user.Name));
             claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
-
+           
             var jsonObj = Newtonsoft.Json.JsonConvert.SerializeObject(user.Rights);
             claims.Add(new Claim("Rights", jsonObj));
 
             var school = await _SchoolService.GetSchoolById(user.SchoolId.ToString());
-
+            claims.Add(new Claim(ClaimTypes.PrimarySid, school.Id.ToString()));
             if (school.SuperAdmins.Contains(user.Id))
             {
                 claims.Add(new Claim(ClaimTypes.Role, RoleNames.SchoolAdmin));
+              
             }
 
             GenericIdentity identity = new GenericIdentity("userid", userId);
@@ -89,7 +90,7 @@ namespace HelloParent.Controllers
             return Ok(new { token = token });
         }
 
-
+       
     }
 
 

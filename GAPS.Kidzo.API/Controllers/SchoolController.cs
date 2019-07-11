@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HelloParent.Controllers;
 using HelloParent.IServices;
 using HelloParent.Utilities.Constants;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ namespace GAPS.Kidzo.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SchoolController : ControllerBase
+    public class SchoolController : BaseAuthenticatedController
     {
         private readonly ISchoolService _schoolService;
         private readonly IMapperService _mapperService;
@@ -32,7 +33,7 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var result = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+                var result = await _schoolService.GetSchoolById(GetMySchoolId().ToString());
                 return Ok(result.Sessions);
             }
             catch (ArgumentNullException argNullEx)

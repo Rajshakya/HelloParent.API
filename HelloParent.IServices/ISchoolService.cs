@@ -13,5 +13,6 @@ namespace HelloParent.IServices
     public interface ISchoolService : IMongoBaseService<School>
     {
         Task<School> GetSchoolById(string id);
+       
     }
 }

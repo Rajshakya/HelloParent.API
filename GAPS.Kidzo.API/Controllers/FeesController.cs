@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GAPS.Kidzo.API.Views;
+using HelloParent.Controllers;
 using HelloParent.Entities.Enums;
 using HelloParent.Entities.Model;
 using HelloParent.IServices;
@@ -21,7 +22,7 @@ namespace GAPS.Kidzo.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FeesController : ControllerBase
+    public class FeesController : BaseAuthenticatedController
     {
        
         private readonly IMapperService _mapperService;
@@ -42,19 +43,16 @@ namespace GAPS.Kidzo.API.Controllers
             this._userService = userService;
             this._transactionService = transactionService;
         }
-        [HttpGet("fees")]
-        public async Task<ActionResult> GetFees()
-        {
-            return Ok();
-        }
+       
         [HttpPost("getfees")]
         public async Task<ActionResult> GetFees([FromBody] FeeFilterView model)
         {
             try
             {
+                var schoolId = GetMySchoolId();
                 FeeStudentModelView FeeStudentView = new FeeStudentModelView();
                 //Get School //
-                var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+                var school = await _schoolService.GetSchoolById(schoolId.ToString());
                 if (school == null)
                 {
                     return BadRequest("School not valid");
@@ -296,7 +294,7 @@ namespace GAPS.Kidzo.API.Controllers
             if (feeModel.FeeIds.Any())
             {
                 var msg = "";
-                var user = await _userService.GetById(Constants.TestingUser_Id);
+                var user = await _userService.GetById(GetLoggedUserId().ToString());
                 // var user = new ApplicationUser();
                 user.Id = Constants.TestingUser_Id;
                 var ids = feeModel.FeeIds.Select(x => x.AsObjectId());
@@ -351,7 +349,7 @@ namespace GAPS.Kidzo.API.Controllers
         {
             try
             {
-                var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+                var school = await _schoolService.GetSchoolById(GetMySchoolId().ToString());
                 if (school == null)
                 {
                     return BadRequest("School not valid");
@@ -493,16 +491,8 @@ namespace GAPS.Kidzo.API.Controllers
         [HttpPost("updatefeecycle")]
         public async Task<ActionResult> UpdateFeeCycle([FromBody] FeeCycleView model)
         {
-            //var rights = GetMyRights();
-            //if (rights == null)
-            //{
-            //    return RedirectToAction("LogOff", "Account");
-            //}
-            //if (!rights.CanManageFee)
-            //{
-            //    return RedirectToAction("Index", "Messages");
-            //}
-            var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+            
+            var school = await _schoolService.GetSchoolById(GetMySchoolId().ToString());
 
             var feeCycleForSession = school.FeeCycles.FirstOrDefault(x => x.SessionId == model.SessionId.AsObjectId() && x.Name.ToLower().Trim() == model.Name.ToLower().Trim());
             if (feeCycleForSession != null && model.Id != feeCycleForSession.Id.ToString())
@@ -531,7 +521,7 @@ namespace GAPS.Kidzo.API.Controllers
         public async Task<ActionResult> CalCulateFeeForClass(CalculateFee model)
         {
           
-            var school = await _schoolService.GetSchoolById(Constants.TestingSchool_Id);
+            var school = await _schoolService.GetSchoolById(GetMySchoolId().ToString());
             var activeSessions = school.GetActiveSession();
 
 
