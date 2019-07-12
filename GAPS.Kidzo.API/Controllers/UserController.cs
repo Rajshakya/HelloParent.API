@@ -28,6 +28,7 @@ namespace HelloParent.Controllers
         {
             try
             {
+                
                 LoggedUserInfo loggedUserInfo = new LoggedUserInfo();
 
                 var school = await _schoolService.GetSchoolById(GetMySchoolId().ToString());
@@ -39,6 +40,35 @@ namespace HelloParent.Controllers
                 loggedUserInfo.SchoolName = school.Name;
                 return Ok(loggedUserInfo);
                  
+            }
+            catch (ArgumentNullException argNullEx)
+            {
+                return BadRequest(argNullEx.Message);
+            }
+            catch (ArgumentException argEx)
+            {
+                return BadRequest(argEx.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Get logged user permission
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Permissions")]
+        public async Task<IActionResult> GetPermissions()
+        {
+            try
+            {
+
+                var permission = GetMyRights();
+                return Ok(permission);
+
             }
             catch (ArgumentNullException argNullEx)
             {

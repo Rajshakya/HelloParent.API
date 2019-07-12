@@ -47,6 +47,40 @@ namespace HelloParent.Controllers
         }
 
         /// <summary>
+        /// Returns Permissions logged user
+        /// </summary>
+        /// <returns></returns>
+
+        /// <summary>
+        /// Returns list of rights that given user has
+        /// </summary>
+        /// <returns></returns>
+        public UserRights GetMyRights()
+        {
+            var user = User.Identity as ClaimsIdentity;
+
+            if (user != null && user.HasClaim(x => x.Type == "Rights"))
+            {
+                var data = user.Claims.Where(x => x.Type == "Rights").Select(x => x.Value).FirstOrDefault();
+                if (data != null)
+                {
+                    try
+                    {
+                        var list = Newtonsoft.Json.JsonConvert.DeserializeObject<UserRights>(data);
+
+
+                        return list;
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Returns list of rights that given user has
         /// </summary>
         /// <returns></returns>
